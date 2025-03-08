@@ -1,11 +1,7 @@
-#!/usr/bin/env node
-
-// Custom absolute value function using only allowed operations.
 function abs(x) {
     return (x < 0 ? -x : x);
 }
 
-// Custom max function to find the maximum number in an array.
 function maxInArray(arr) {
     let m = arr[0];
     for (let i = 1; i < arr.length; i++) {
@@ -16,7 +12,6 @@ function maxInArray(arr) {
     return m;
 }
 
-// Custom square root function using Newton's method.
 function sqrtCustom(n) {
     if (n < 0) {
         throw new Error("Cannot compute square root of negative number");
@@ -32,12 +27,8 @@ function sqrtCustom(n) {
     return x;
 }
 
-// Helper: Parse a side of the equation (e.g. "5 * X^0+4*X^1-9.3*X^2")
-// Returns an object mapping exponent (as a number) to the accumulated coefficient.
 function parseSide(side) {
-    // Remove all spaces for easier regex processing.
     const cleanSide = side.replace(/\s/g, '');
-    // Regex to match terms like +5*X^0 or -9.3*X^2.
     const termRegex = /([+-]?[\d.]+)\*X\^(\d+)/g;
     const coeffs = {};
     let match;
@@ -49,10 +40,8 @@ function parseSide(side) {
     return coeffs;
 }
 
-// Compute the reduced form by subtracting the right-hand side from the left-hand side.
 function getReducedForm(leftCoeffs, rightCoeffs) {
     const reduced = {};
-    // Get all exponents appearing on either side.
     const exponents = new Set([
         ...Object.keys(leftCoeffs).map(Number),
         ...Object.keys(rightCoeffs).map(Number)
@@ -66,7 +55,6 @@ function getReducedForm(leftCoeffs, rightCoeffs) {
     return reduced;
 }
 
-// Build a string representing the reduced form: "a * X^p" terms, in increasing order of exponent.
 function buildReducedString(reduced) {
     const exponents = Object.keys(reduced)
         .map(Number)
@@ -74,7 +62,6 @@ function buildReducedString(reduced) {
     let result = '';
     exponents.forEach((exp, idx) => {
         const coef = reduced[exp];
-        // Skip zero coefficients in display (unless it's the only term)
         if (coef === 0 && exponents.length > 1) return;
         let termStr = '';
         if (idx === 0) {
@@ -88,20 +75,17 @@ function buildReducedString(reduced) {
     return result || "0";
 }
 
-// Determine the polynomial degree: highest exponent with a non-zero coefficient.
 function getDegree(reduced) {
     const exponents = Object.keys(reduced).map(Number);
     const nonZeroExps = exponents.filter(exp => abs(reduced[exp]) > 1e-8);
     return nonZeroExps.length > 0 ? maxInArray(nonZeroExps) : 0;
 }
 
-// Solve a linear equation: a * X^1 + b * X^0 = 0  => X = -b/a
 function solveLinear(a, b) {
     if (abs(a) < 1e-8) return null;
     return -b / a;
 }
 
-// Solve a quadratic equation: a*X^2 + b*X + c = 0
 function solveQuadratic(a, b, c) {
     const discriminant = b * b - 4 * a * c;
     if (discriminant > 1e-8) {
@@ -120,7 +104,6 @@ function solveQuadratic(a, b, c) {
     }
 }
 
-// Main function to solve the polynomial equation.
 function solvePolynomial(equation) {
     const sides = equation.split('=');
     if (sides.length !== 2) {
@@ -137,7 +120,7 @@ function solvePolynomial(equation) {
     console.log("Polynomial degree:", degree);
 
     if (degree > 2) {
-        console.log("The polynomial degree is strictly greater than 2, I can't solve.");
+        console.log("The polynomial degree is greater than 2.");
         return;
     }
 
@@ -175,7 +158,6 @@ function solvePolynomial(equation) {
         }
     }
 }
-
 
 if (process.argv.length < 3) {
     console.error("Usage: node c_v1.js \"<equation>\"");
